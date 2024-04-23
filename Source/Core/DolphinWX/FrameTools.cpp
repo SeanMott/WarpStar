@@ -1050,13 +1050,13 @@ void CFrame::OnHelp(wxCommandEvent& event)
 	}
 	break;
 	case IDM_HELP_WEBSITE:
-		WxUtils::Launch("https://dolphin-emu.org/");
+		WxUtils::Launch("https://www.kirbyairrideonline.com/home");
 		break;
 	case IDM_HELP_ONLINE_DOCS:
-		WxUtils::Launch("https://dolphin-emu.org/docs/guides/");
+		WxUtils::Launch("https://kar.miraheze.org/wiki/Main_Page");
 		break;
 	case IDM_HELP_GITHUB:
-		WxUtils::Launch("https://github.com/dolphin-emu/dolphin");
+		WxUtils::Launch("https://github.com/SeanMott/WarpStar/tree/main");
 		break;
 	}
 }

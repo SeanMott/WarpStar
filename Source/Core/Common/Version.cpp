@@ -13,9 +13,9 @@
 #define BUILD_TYPE_STR ""
 #endif
 
-const std::string release_string = "Faster Melee - Slippi (r10)";
+const std::string release_string = "Faster Melee - Warp Star (0.0.1)";
 
-const std::string scm_rev_str = "Ishiiruka-Dolphin"
+const std::string scm_rev_str = "Warp Star-Ishiiruka"
 #if !SCM_IS_MASTER
 "[" SCM_BRANCH_STR "] "
 #endif

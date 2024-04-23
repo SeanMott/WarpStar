@@ -23,22 +23,26 @@ AboutDolphin::AboutDolphin(wxWindow* parent, wxWindowID id, const wxString& titl
 	wxGenericStaticBitmap* const sbDolphinLogo = new wxGenericStaticBitmap(
 		this, wxID_ANY, WxUtils::LoadScaledResourceBitmap("dolphin_logo", this));
 
-	const wxString DolphinText = _("Ishiiruka - Dolphin");
+	const wxString DolphinText = _("Warp Star - Ishiiruka");
 	const wxString RevisionText = scm_desc_str;
 	const wxString CopyrightText =
-		_("(c) 2003-2015+ Dolphin Team. \"GameCube\" and \"Wii\" are trademarks of Nintendo. Dolphin "
+		_("(c) 04/23/2024+ Sean (Jas) Mott. \"GameCube\", \"Wii\", and \"Kirby Air Ride\" are trademarks of Nintendo. Warp Star "
 			"is not affiliated with Nintendo in any way.");
 	const wxString BranchText = wxString::Format(_("Branch: %s"), scm_branch_str.c_str());
 	const wxString BranchRevText = wxString::Format(_("Revision: %s"), scm_rev_git_str.c_str());
-	const wxString CheckUpdateText = _("Check for updates: ");
+	const wxString CheckUpdateText = _("Download Updates via KAR Workshop: ");
 	const wxString Text =
 		_("\n"
-			"Dolphin is a free and open-source GameCube and Wii emulator.\n"
+			"Warp Star is a free and open-source KAR emulator.\n"
 			"\n"
-			"This software should not be used to play games you do not legally own.\n");
+			"This software should be used to play KAR Netplay.\n\n"
+			"Created by Sean (Jas) Mott based on the work by Slippie and Dolphin Team\n\n"
+	        "Special thanks to Jinxy for assisting with finding some of the quirks with Dolphin and being a second pair of eyes to this insane idea\n\n"
+			"Special thanks to Taco, Support PVP, and Hey Now for being my test subjects\n\n"
+	        "And of course our resident Netplay Admin Kinix, where would I be without his WTFs and adament support\n");
 	const wxString LicenseText = _("License");
-	const wxString AuthorsText = _("Authors");
-	const wxString SupportText = _("Support");
+	//const wxString AuthorsText = _("Sean (Jas) Mott, based on the work by the Slippie crew");
+	const wxString SupportText = _("Support can be found at the Netplay Server");
 
 	wxStaticText* const Dolphin = new wxStaticText(this, wxID_ANY, DolphinText);
 	wxStaticText* const Revision = new wxStaticText(this, wxID_ANY, RevisionText);
@@ -49,16 +53,17 @@ AboutDolphin::AboutDolphin(wxWindow* parent, wxWindowID id, const wxString& titl
 	wxStaticText* const Message = new wxStaticText(this, wxID_ANY, Text);
 	wxStaticText* const UpdateText = new wxStaticText(this, wxID_ANY, CheckUpdateText);
 	wxStaticText* const FirstSpacer = new wxStaticText(this, wxID_ANY, "  |  ");
-	wxStaticText* const SecondSpacer = new wxStaticText(this, wxID_ANY, "  |  ");
-	wxHyperlinkCtrl* const Download = new wxHyperlinkCtrl(this, wxID_ANY, "dolphin-emu.org/download",
-		"https://dolphin-emu.org/download/");
+	wxHyperlinkCtrl* const Download = new wxHyperlinkCtrl(this, wxID_ANY, "KAR Workshop",
+		"");
 	wxHyperlinkCtrl* const License =
 		new wxHyperlinkCtrl(this, wxID_ANY, LicenseText,
-			"https://github.com/dolphin-emu/dolphin/blob/master/license.txt");
-	wxHyperlinkCtrl* const Authors = new wxHyperlinkCtrl(
-		this, wxID_ANY, AuthorsText, "https://github.com/dolphin-emu/dolphin/graphs/contributors");
+			"https://github.com/SeanMott/WarpStar/blob/main/license.txt");
+	//wxHyperlinkCtrl* const Authors = new wxHyperlinkCtrl(
+	//	this, wxID_ANY, AuthorsText, "");
+	//wxStaticText *const authors =
+	//    new wxStaticText(this, wxID_ANY, "Sean (Jas) Mott, based on the work by the Slippie crew");
 	wxHyperlinkCtrl* const Support =
-		new wxHyperlinkCtrl(this, wxID_ANY, SupportText, "https://forums.dolphin-emu.org/");
+		new wxHyperlinkCtrl(this, wxID_ANY, SupportText, "http://discord.gg/p3rGrcr");
 
 	wxFont DolphinFont = Dolphin->GetFont();
 	wxFont RevisionFont = Revision->GetFont();
@@ -94,8 +99,7 @@ AboutDolphin::AboutDolphin(wxWindow* parent, wxWindowID id, const wxString& titl
 	wxBoxSizer* const sLinks = new wxBoxSizer(wxHORIZONTAL);
 	sLinks->Add(License, center_flag);
 	sLinks->Add(FirstSpacer, center_flag);
-	sLinks->Add(Authors, center_flag);
-	sLinks->Add(SecondSpacer, center_flag);
+	//sLinks->Add(SecondSpacer, center_flag);
 	sLinks->Add(Support, center_flag);
 
 	wxBoxSizer* const sInfo = new wxBoxSizer(wxVERTICAL);

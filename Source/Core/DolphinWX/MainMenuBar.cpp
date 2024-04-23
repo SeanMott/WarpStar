@@ -481,7 +481,7 @@ wxMenu* MainMenuBar::CreateHelpMenu() const
 {
 	auto* const help_menu = new wxMenu;
 	help_menu->Append(IDM_HELP_WEBSITE, _("&Website"));
-	help_menu->Append(IDM_HELP_ONLINE_DOCS, _("Online &Documentation"));
+	help_menu->Append(IDM_HELP_ONLINE_DOCS, _("&Wiki"));
 	help_menu->Append(IDM_HELP_GITHUB, _("&GitHub Repository"));
 	help_menu->AppendSeparator();
 	help_menu->Append(wxID_ABOUT, _("&About"));
