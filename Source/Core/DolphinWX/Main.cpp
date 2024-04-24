@@ -216,6 +216,8 @@ void DolphinApp::OnInitCmdLine(wxCmdLineParser& parser)
 			{wxCMD_LINE_OPTION, "e", "exec",
 			"Loads the specified file (ELF, DOL, GCM, ISO, TGC, WBFS, CISO, GCZ, WAD)",
 			wxCMD_LINE_VAL_STRING, wxCMD_LINE_PARAM_OPTIONAL },
+			{wxCMD_LINE_OPTION, "n", "netplay", "Starts a netplay session (either connecting or hosting)",
+	     wxCMD_LINE_VAL_STRING, wxCMD_LINE_PARAM_OPTIONAL},
 			{wxCMD_LINE_SWITCH, "b", "batch", "Exit Dolphin with emulator", wxCMD_LINE_VAL_NONE,
 			 wxCMD_LINE_PARAM_OPTIONAL},
 			{wxCMD_LINE_OPTION, "c", "confirm", "Set Confirm on Stop", wxCMD_LINE_VAL_STRING,
@@ -228,6 +230,17 @@ void DolphinApp::OnInitCmdLine(wxCmdLineParser& parser)
 			 wxCMD_LINE_PARAM_OPTIONAL},
 			{wxCMD_LINE_OPTION, "u", "user", "User folder path", wxCMD_LINE_VAL_STRING,
 			 wxCMD_LINE_PARAM_OPTIONAL},
+
+			//netplay options
+			{wxCMD_LINE_OPTION, "ic", "ip-hostcode", "The IP Address or host code to connect to", wxCMD_LINE_VAL_STRING,
+			wxCMD_LINE_PARAM_OPTIONAL},
+			{wxCMD_LINE_OPTION, "p", "port", "The port to connect to/host/listen to", wxCMD_LINE_VAL_STRING,
+			wxCMD_LINE_PARAM_OPTIONAL},
+			{wxCMD_LINE_OPTION, "nm", "netMode", "The mode we use to connect either traversal or direct", wxCMD_LINE_VAL_STRING,
+			wxCMD_LINE_PARAM_OPTIONAL},
+			{wxCMD_LINE_OPTION, "nick", "nickname", "The port to connect to/host/listen to", wxCMD_LINE_VAL_STRING,
+			wxCMD_LINE_PARAM_OPTIONAL},
+
 			{wxCMD_LINE_NONE, nullptr, nullptr, nullptr, wxCMD_LINE_VAL_NONE, 0} };
 
 	parser.SetDesc(desc);
@@ -289,6 +302,13 @@ bool DolphinApp::OnCmdLineParsed(wxCmdLineParser& parser)
 	m_play_movie = parser.Found("movie", &m_movie_file);
 	parser.Found("user", &m_user_path);
 
+	//parses netplay commands
+	m_autoStartNetplay = parser.Found("netplay", &isNetplayAutoStart_HostOrConnecting);
+	if (m_autoStartNetplay)
+	{
+	
+	}
+
 	return true;
 }
 
@@ -306,28 +326,71 @@ void DolphinApp::AfterInit()
 	if (!m_batch_mode)
 		main_frame->UpdateGameList();
 
-	if (!SConfig::GetInstance().m_analytics_permission_asked)
+	//fills in the data if it exists
+	if (m_autoStartNetplay)
 	{
-		int answer =
-			wxMessageBox(_("If authorized, Dolphin can collect data on its performance, "
-				"feature usage, and configuration, as well as data on your system's "
-				"hardware and operating system.\n\n"
-				"No private data is ever collected. This data helps us understand "
-				"how people and emulated games use Dolphin and prioritize our "
-				"efforts. It also helps us identify rare configurations that are "
-				"causing bugs, performance and stability issues.\n"
-				"This authorization can be revoked at any time through Dolphin's "
-				"settings.\n\n"
-				"Do you authorize Dolphin to report this information to Dolphin's "
-				"developers?"),
-				_("Usage statistics reporting"), wxYES_NO, main_frame);
+		// stores the default values
+		IniFile inifile;
+		const std::string dolphin_ini = File::GetUserPath(F_DOLPHINCONFIG_IDX);
+		inifile.Load(dolphin_ini);
+		IniFile::Section &netplay_section = *inifile.GetOrCreateSection("NetPlay");
 
-		SConfig::GetInstance().m_analytics_permission_asked = true;
-		SConfig::GetInstance().m_analytics_enabled = (answer == wxYES);
-		SConfig::GetInstance().SaveSettings();
+		// sets the host code
+		netplay_section.Set("HostCode", std::string("69696969"));
+		// sets the address
+		netplay_section.Set("Address", std::string("127.0.0.1"));
 
-		DolphinAnalytics::Instance()->ReloadConfig();
+		// sets the port to connect to on the host machine
+		netplay_section.Set("ConnectPort", 69);
+
+		// sets the port to listen on the host machine
+		netplay_section.Set("HostPort", 69);
+
+		// sets it to the Hack Pack or whichever ROM was selected in the menu
+		// temp.clear();
+		// if (netplay_section.Get("SelectedHostGame", &temp, ""))
+		//	m_game_lbox->SetStringSelection(StrToWxStr(temp));
+
+		//#ifdef USE_UPNP
+		//		bool use_upnp = false;
+		//		netplay_section.Get("UseUPNP", &use_upnp, false);
+		//		m_upnp_chk->SetValue(use_upnp);
+		//#endif
+
+		// sets the listening port
+		netplay_section.Set("ListenPort", 69);
+
+		// sets if we're direct connecting or traversal
+		netplay_section.Set("TraversalChoice", std::string("direct"));
+
+		// sets the nickname
+		netplay_section.Set("Nickname", std::string("Jaskier"));
+
+		// saves the data
+		inifile.Save(dolphin_ini);
 	}
+
+	//if (!SConfig::GetInstance().m_analytics_permission_asked)
+	//{
+	//	int answer = wxMessageBox(_("If authorized, Dolphin can collect data on its performance, "
+	//	                            "feature usage, and configuration, as well as data on your system's "
+	//	                            "hardware and operating system.\n\n"
+	//	                            "No private data is ever collected. This data helps us understand "
+	//	                            "how people and emulated games use Dolphin and prioritize our "
+	//	                            "efforts. It also helps us identify rare configurations that are "
+	//	                            "causing bugs, performance and stability issues.\n"
+	//	                            "This authorization can be revoked at any time through Dolphin's "
+	//	                            "settings.\n\n"
+	//	                            "Do you authorize Dolphin to report this information to Dolphin's "
+	//	                            "developers?"),
+	//	                          _("Usage statistics reporting"), wxYES_NO, main_frame);
+	//
+	//	SConfig::GetInstance().m_analytics_permission_asked = true;
+	//	SConfig::GetInstance().m_analytics_enabled = (answer == wxYES);
+	//	SConfig::GetInstance().SaveSettings();
+	//
+	//	DolphinAnalytics::Instance()->ReloadConfig();
+	//}
 
 	if (m_confirm_stop)
 	{
@@ -364,6 +427,15 @@ void DolphinApp::AfterInit()
 		{
 			main_frame->BootGame("");
 		}
+	}
+
+	// if netplay is started
+	if (m_autoStartNetplay)
+	{
+		wxCommandEvent e;
+		main_frame->OnNetPlay(e); //starts netplay
+
+		//auto fills the info based on what was passed in
 	}
 }
 

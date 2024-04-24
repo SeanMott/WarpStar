@@ -48,6 +48,7 @@ private:
 	bool m_use_logger = false;
 	bool m_select_video_backend = false;
 	bool m_select_audio_emulation = false;
+	
 	wxString m_confirm_setting;
 	wxString m_video_backend_name;
 	wxString m_audio_emulation_name;
@@ -55,6 +56,12 @@ private:
 	wxString m_file_to_load;
 	wxString m_movie_file;
 	std::unique_ptr<wxLocale> m_locale;
+
+	//stuff for managing netplay starting auto session
+	bool m_autoStartNetplay = false;
+	bool m_hasBeenGivenANetplayPort = false;
+	bool m_hasBeenGivenANetplayIPOrHostCode = false;
+	wxString isNetplayAutoStart_HostOrConnecting;
 };
 
 DECLARE_APP(DolphinApp);

@@ -113,6 +113,9 @@ public:
 	void UpdateTitle(const std::string& str);
 	void OpenGeneralConfiguration(wxWindowID tab_id = wxID_ANY);
 
+	//starts netplay open
+	void OnNetPlay(wxCommandEvent &event);
+
 	const CGameListCtrl* GetGameListCtrl() const;
 	wxMenuBar* GetMenuBar() const override;
 
@@ -245,6 +248,8 @@ private:
 	void OnOpen(wxCommandEvent& event);  // File menu
 	void DoOpen(bool Boot);
 	void OnRefresh(wxCommandEvent& event);
+	//void OnSyncWithKARWorkshop(wxCommandEvent &event);
+	//void OnPrepForKARNetplay(wxCommandEvent &event);
 	void OnBootDrive(wxCommandEvent& event);
 
 	void OnPlay(wxCommandEvent& event);  // Emulation
@@ -302,7 +307,7 @@ private:
 	void OnImportSave(wxCommandEvent& event);
 	void OnExportAllSaves(wxCommandEvent& event);
 
-	void OnNetPlay(wxCommandEvent& event);
+	
 
 	void OnShowCheatsWindow(wxCommandEvent& event);
 	void OnLoadWiiMenu(wxCommandEvent& event);

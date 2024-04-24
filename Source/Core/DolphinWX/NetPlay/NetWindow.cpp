@@ -67,7 +67,7 @@ void NetPlayDialog::FillWithGameNames(wxListBox* game_lbox, const CGameListCtrl&
 
 NetPlayDialog::NetPlayDialog(wxWindow* const parent, const CGameListCtrl* const game_list,
 	const std::string& game, const bool is_hosting)
-	: wxFrame(parent, wxID_ANY, _("Dolphin NetPlay")), m_selected_game(game), m_start_btn(nullptr),
+	: wxFrame(parent, wxID_ANY, _("Warp Star NetPlay")), m_selected_game(game), m_start_btn(nullptr),
 	m_host_label(nullptr), m_host_type_choice(nullptr), m_host_copy_btn(nullptr),
 	m_host_copy_btn_is_retry(false), m_is_hosting(is_hosting), m_game_list(game_list)
 {
