@@ -19,6 +19,18 @@ public:
 	bool IsActiveThreadsafe() const { return m_is_active; }
 	CFrame* GetCFrame();
 
+	// stuff for managing netplay starting auto session
+	bool m_autoStartNetplay = false;
+	bool m_hasBeenGivenANetplayPort = false;
+	bool m_hasBeenGivenANetplayIPOrHostCode = false;
+	bool m_hasBeenGivenANetplayConnectMode = false;
+	wxString isNetplayAutoStart_HostOrConnecting;
+	wxString isNetplayAutoStart_port;
+	wxString isNetplayAutoStart_address;
+	wxString isNetplayAutoStart_netConnectMode;
+	wxString isNetplayAutoStart_onlineNickName;
+	wxString isNetplayAutoStart_ROMID;
+
 private:
 	bool OnInit() override;
 	int OnExit() override;
@@ -57,11 +69,7 @@ private:
 	wxString m_movie_file;
 	std::unique_ptr<wxLocale> m_locale;
 
-	//stuff for managing netplay starting auto session
-	bool m_autoStartNetplay = false;
-	bool m_hasBeenGivenANetplayPort = false;
-	bool m_hasBeenGivenANetplayIPOrHostCode = false;
-	wxString isNetplayAutoStart_HostOrConnecting;
+	
 };
 
 DECLARE_APP(DolphinApp);

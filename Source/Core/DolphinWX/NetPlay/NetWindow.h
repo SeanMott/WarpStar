@@ -139,7 +139,7 @@ private:
 	void OnChoice(wxCommandEvent& event);
 	void UpdateHostLabel();
 
-    bool IsNTSCMelee();
+    bool IsKARHackPack();
     bool Is20XX();
     bool IsPALMelee();
 

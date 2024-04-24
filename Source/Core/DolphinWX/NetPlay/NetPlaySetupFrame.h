@@ -23,6 +23,11 @@ public:
 	NetPlaySetupFrame(wxWindow* const parent, const CGameListCtrl* const game_list);
 	~NetPlaySetupFrame();
 
+	//joins the game
+	void DoJoin();
+	//hosts a game
+	void DoHost(bool startedViaCLI);
+
 private:
 	static constexpr int CONNECT_TAB = 0;
 	static constexpr int HOST_TAB = 1;
@@ -35,8 +40,7 @@ private:
 
 	void OnJoin(wxCommandEvent& event);
 	void OnHost(wxCommandEvent& event);
-	void DoJoin();
-	void DoHost();
+	
 	void OnQuit(wxCommandEvent& event);
 	void OnDirectTraversalChoice(wxCommandEvent& event);
 	void OnResetTraversal(wxCommandEvent& event);

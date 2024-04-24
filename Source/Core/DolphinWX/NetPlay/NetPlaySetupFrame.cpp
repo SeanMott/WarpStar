@@ -315,24 +315,40 @@ NetPlaySetupFrame::~NetPlaySetupFrame()
 
 void NetPlaySetupFrame::OnHost(wxCommandEvent&)
 {
-	DoHost();
+	DoHost(false);
 }
 
-void NetPlaySetupFrame::DoHost()
+void NetPlaySetupFrame::DoHost(bool startedViaCLI)
 {
-	if (m_game_lbox->GetSelection() == wxNOT_FOUND)
-	{
-		WxUtils::ShowErrorDialog(_("You must choose a game!"));
-		return;
-	}
-
+	//loads the ini file
 	IniFile ini_file;
 	const std::string dolphin_ini = File::GetUserPath(F_DOLPHINCONFIG_IDX);
 	ini_file.Load(dolphin_ini);
-	IniFile::Section& netplay_section = *ini_file.GetOrCreateSection("NetPlay");
+	IniFile::Section &netplay_section = *ini_file.GetOrCreateSection("NetPlay");
+
+	//if we started this via command line
+	std::string game = "";
+	if (startedViaCLI)
+	{
+		//sets the game
+		netplay_section.Get("SelectedHostGame", &game);
+	}
+	else
+	{
+		if (m_game_lbox->GetSelection() == wxNOT_FOUND)
+		{
+		
+			WxUtils::ShowErrorDialog(_("You must choose a game"));
+		
+			return;
+		}
+
+		//sets the game
+		game = WxStrToStr(m_game_lbox->GetStringSelection());
+	}
 
 	NetPlayHostConfig host_config;
-	host_config.game_name = WxStrToStr(m_game_lbox->GetStringSelection());
+	host_config.game_name = game;
 	host_config.use_traversal = m_direct_traversal->GetCurrentSelection() == TRAVERSAL_CHOICE;
 	host_config.player_name = WxStrToStr(m_nickname_text->GetValue());
 	host_config.game_list_ctrl = m_game_list;
@@ -511,7 +527,7 @@ void NetPlaySetupFrame::OnKeyDown(wxKeyEvent& event)
 		DoJoin();
 		break;
 	case HOST_TAB:
-		DoHost();
+		DoHost(false);
 		break;
 	}
 }

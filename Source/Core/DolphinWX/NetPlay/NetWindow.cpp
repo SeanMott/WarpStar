@@ -266,7 +266,7 @@ wxSizer* NetPlayDialog::CreateBottomGUI(wxWindow* parent)
 		m_minimum_padbuf_spin->Bind(wxEVT_SPINCTRL, &NetPlayDialog::OnAdjustMinimumBuffer, this);
 		m_minimum_padbuf_spin->SetMinSize(WxUtils::GetTextWidgetMinSize(m_minimum_padbuf_spin));
 
-         if(IsNTSCMelee() || IsPALMelee())
+         if(IsKARHackPack() || IsPALMelee())
         {
             if(!Is20XX())
             {
@@ -290,7 +290,7 @@ wxSizer* NetPlayDialog::CreateBottomGUI(wxWindow* parent)
 		bottom_szr->Add(buffer_lbl, 0, wxALIGN_CENTER_VERTICAL | wxLEFT, space5);
 		bottom_szr->Add(m_player_padbuf_spin, 0, wxALIGN_CENTER_VERTICAL | wxLEFT, space5);
 
-        if(IsNTSCMelee() || IsPALMelee())
+        if(IsKARHackPack() || IsPALMelee())
         {
             if(!Is20XX())
             {
@@ -375,9 +375,10 @@ void NetPlayDialog::OnChat(wxCommandEvent&)
 	}
 }
 
-bool NetPlayDialog::IsNTSCMelee()
+bool NetPlayDialog::IsKARHackPack()
 {
-    return m_selected_game.find("GALE01") != std::string::npos || m_selected_game.find("GALJ01") != std::string::npos;
+	return m_selected_game.find("KHPE01") != std::string::npos;
+	//|| m_selected_game.find("GALJ01") != std::string::npos;
 }
 
 bool NetPlayDialog::Is20XX()
@@ -407,8 +408,8 @@ void NetPlayDialog::GetNetSettings(NetSettings& settings)
 	settings.m_OCFactor = instance.m_OCFactor;
 	settings.m_EXIDevice[0] = m_memcard_write->GetValue() ? instance.m_EXIDevice[0] : EXIDEVICE_NONE;
 	settings.m_EXIDevice[1] = m_memcard_write->GetValue() ? instance.m_EXIDevice[1] : EXIDEVICE_NONE;
-    settings.m_LagReduction = (IsNTSCMelee() && !Is20XX()) || IsPALMelee()? (MeleeLagReductionCode)(m_lag_reduction_choice->GetSelection() + 1) : MELEE_LAG_REDUCTION_CODE_UNSET;
-    settings.m_MeleeForceWidescreen = IsNTSCMelee() || IsPALMelee() ? m_widescreen_force_chkbox->GetValue() : false;
+    settings.m_LagReduction = (IsKARHackPack() && !Is20XX()) || IsPALMelee() ? (MeleeLagReductionCode)(m_lag_reduction_choice->GetSelection() + 1) : MELEE_LAG_REDUCTION_CODE_UNSET;
+    settings.m_MeleeForceWidescreen = IsKARHackPack() || IsPALMelee() ? m_widescreen_force_chkbox->GetValue() : false;
 }
 
 std::string NetPlayDialog::FindGame(const std::string& target_game)
@@ -488,7 +489,7 @@ void NetPlayDialog::OnMsgStartGame()
 		m_game_btn->Disable();
 		m_player_config_btn->Disable();
         
-        if(IsNTSCMelee() || IsPALMelee())
+        if(IsKARHackPack() || IsPALMelee())
         {
         	if(!Is20XX())
             	m_lag_reduction_choice->Disable();
@@ -510,7 +511,7 @@ void NetPlayDialog::OnMsgStopGame()
 		m_game_btn->Enable();
 		m_player_config_btn->Enable();
 
-        if(IsNTSCMelee() || IsPALMelee())
+        if(IsKARHackPack() || IsPALMelee())
         {
         	if(!Is20XX())
             	m_lag_reduction_choice->Enable();

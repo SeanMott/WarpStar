@@ -48,6 +48,8 @@
 #include "DolphinWX/SoftwareVideoConfigDialog.h"
 #include "DolphinWX/VideoConfigDiag.h"
 #include "DolphinWX/WxUtils.h"
+#include "DolphinWX/NetPlay/NetPlaySetupFrame.h"
+#include "DolphinWX/NetPlay/NetWindow.h"
 
 #include "UICommon/UICommon.h"
 
@@ -240,6 +242,8 @@ void DolphinApp::OnInitCmdLine(wxCmdLineParser& parser)
 			wxCMD_LINE_PARAM_OPTIONAL},
 			{wxCMD_LINE_OPTION, "nick", "nickname", "The port to connect to/host/listen to", wxCMD_LINE_VAL_STRING,
 			wxCMD_LINE_PARAM_OPTIONAL},
+			{wxCMD_LINE_OPTION, "r", "ROMID", "The ROM ID to use", wxCMD_LINE_VAL_STRING,
+	     wxCMD_LINE_PARAM_OPTIONAL},
 
 			{wxCMD_LINE_NONE, nullptr, nullptr, nullptr, wxCMD_LINE_VAL_NONE, 0} };
 
@@ -304,10 +308,14 @@ bool DolphinApp::OnCmdLineParsed(wxCmdLineParser& parser)
 
 	//parses netplay commands
 	m_autoStartNetplay = parser.Found("netplay", &isNetplayAutoStart_HostOrConnecting);
-	if (m_autoStartNetplay)
-	{
-	
-	}
+	//if (m_autoStartNetplay)
+	//{
+	m_hasBeenGivenANetplayIPOrHostCode = parser.Found("ip-hostcode", &isNetplayAutoStart_address);
+	m_hasBeenGivenANetplayPort = parser.Found("port", &isNetplayAutoStart_port);
+	m_hasBeenGivenANetplayConnectMode = parser.Found("netMode", &isNetplayAutoStart_netConnectMode);
+	parser.Found("nickname", &isNetplayAutoStart_onlineNickName);
+	parser.Found("ROMID", &isNetplayAutoStart_ROMID);
+	//}
 
 	return true;
 }
@@ -335,21 +343,44 @@ void DolphinApp::AfterInit()
 		inifile.Load(dolphin_ini);
 		IniFile::Section &netplay_section = *inifile.GetOrCreateSection("NetPlay");
 
-		// sets the host code
-		netplay_section.Set("HostCode", std::string("69696969"));
+		//netplay_section.Set("HostCode", std::string("69696969"));
 		// sets the address
-		netplay_section.Set("Address", std::string("127.0.0.1"));
+		//netplay_section.Set("Address", std::string("127.0.0.1"));
+
+		// sets the host code
+		if (m_hasBeenGivenANetplayIPOrHostCode)
+		{
+			//sets host code and IP address
+			netplay_section.Set("HostCode", WxStrToStr(isNetplayAutoStart_address));
+			netplay_section.Set("Address", WxStrToStr(isNetplayAutoStart_address));
+		}
 
 		// sets the port to connect to on the host machine
-		netplay_section.Set("ConnectPort", 69);
+		//netplay_section.Set("ConnectPort", 69);
+		//
+		//// sets the port to listen on the host machine
+		//netplay_section.Set("HostPort", 69);
+		//
+		//// sets the listening port
+		//netplay_section.Set("ListenPort", 69);
 
-		// sets the port to listen on the host machine
-		netplay_section.Set("HostPort", 69);
+		// sets the port to connect to on the host machine
+		if (m_hasBeenGivenANetplayPort)
+		{
+			netplay_section.Set("ConnectPort", WxStrToStr(isNetplayAutoStart_port));
+
+			// sets the port to listen on the host machine
+			netplay_section.Set("HostPort", WxStrToStr(isNetplayAutoStart_port));
+
+			// sets the listening port
+			netplay_section.Set("ListenPort", WxStrToStr(isNetplayAutoStart_port));
+		}
 
 		// sets it to the Hack Pack or whichever ROM was selected in the menu
 		// temp.clear();
 		// if (netplay_section.Get("SelectedHostGame", &temp, ""))
 		//	m_game_lbox->SetStringSelection(StrToWxStr(temp));
+		netplay_section.Set("SelectedHostGame", WxStrToStr(isNetplayAutoStart_ROMID));
 
 		//#ifdef USE_UPNP
 		//		bool use_upnp = false;
@@ -357,14 +388,18 @@ void DolphinApp::AfterInit()
 		//		m_upnp_chk->SetValue(use_upnp);
 		//#endif
 
-		// sets the listening port
-		netplay_section.Set("ListenPort", 69);
+		// sets if we're direct connecting or traversal
+		//netplay_section.Set("TraversalChoice", std::string("direct"));
 
 		// sets if we're direct connecting or traversal
-		netplay_section.Set("TraversalChoice", std::string("direct"));
+		if (m_hasBeenGivenANetplayConnectMode)
+			netplay_section.Set("TraversalChoice", WxStrToStr(isNetplayAutoStart_netConnectMode));
 
 		// sets the nickname
-		netplay_section.Set("Nickname", std::string("Jaskier"));
+		//netplay_section.Set("Nickname", std::string("Jaskier"));
+
+		// sets the nickname
+		netplay_section.Set("Nickname", WxStrToStr(isNetplayAutoStart_onlineNickName));
 
 		// saves the data
 		inifile.Save(dolphin_ini);
@@ -432,10 +467,17 @@ void DolphinApp::AfterInit()
 	// if netplay is started
 	if (m_autoStartNetplay)
 	{
+		//initalizes the game list early
+		main_frame->UpdateGameList();
+
 		wxCommandEvent e;
 		main_frame->OnNetPlay(e); //starts netplay
+		
+		//if we're the host, start hosting
+		main_frame->g_NetPlaySetupDiag->DoHost(true);
+		//make sure the game is selected
 
-		//auto fills the info based on what was passed in
+		//if we're someone else connecting, connect
 	}
 }
 

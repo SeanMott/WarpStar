@@ -506,22 +506,7 @@ void EmuThread()
 	IniFile::Section &netplay_section = *ini_file.GetOrCreateSection("NetPlay");
 	std::string onlineNickname = "";
 	netplay_section.Get("Nickname", &onlineNickname, "Player");
-	
-	//const u32 red = 255;
-	//const u32 green = 105;
-	//const u32 blue = 180;
-	//
-	////const u32 alpha = 8;
-	//u32 r = red & 0xFF;
-	//u32 g = green & 0xFF;
-	//u32 b = blue & 0xFF;
-	////u32 a = alpha & 0xFF;
-	//
-	//u32 rgb = (r << 24) + (g << 16) + (b << 8);
-	//+(a);
-	
-	OSD::AddMessage("User: " + onlineNickname, 999999, 0xFFfc0fc0); // 0xFFC0CBFF);
-	//0xFFFF0000
+	OSD::AddMessage("User: " + onlineNickname, 999999, 0xFFfc0fc0); //color is hot pink);
 	
 	//render video backend	
 	OSD::AddMessage("Dolphin " + video_backend->GetName() + " Video Backend.", 5000);
