@@ -5,20 +5,87 @@
 #include <sstream>
 #include <string>
 #include <vector>
+#include <queue>
 
 #include "Common/IniFile.h"
 #include "Common/StringUtil.h"
 #include "Core/GeckoCodeConfig.h"
+#include "Common/FileUtil.h"
 
 namespace Gecko
 {
 
-void LoadCodes(const IniFile& globalIni, const IniFile& localIni, std::vector<GeckoCode>& gcodes)
+void LoadCodes(const IniFile &globalIni, const IniFile &localIni, std::vector<GeckoCode> &gcodes)
 {
-	const IniFile* inis[2] = { &globalIni, &localIni };
+	std::vector<IniFile> inis;
+	inis.emplace_back(globalIni);
+	inis.emplace_back(localIni);
+	//IniFile coreKARIni;
+	//coreKARIni.Load(File::GetSysDirectory() + "../Mods/FlashyMenu.ini");
+	//inis.emplace_back(coreKARIni);
 
-	for (const IniFile* ini : inis)
+	//gets the Core Netplay settings
+	//IniFile coreKARIni;
+	//coreKARIni.Load(File::GetSysDirectory() + "../Mods/FlashyMenu.ini");
+	//std::vector<std::string> lines;
+	//coreKARIni.GetLines("Gecko", &lines, false);
+	//GeckoCode gcode;
+	//
+	//for (auto &line : lines)
+	//{
+	//	if (line.empty())
+	//		continue;
+	//
+	//	std::istringstream ss(line);
+	//
+	//	switch ((line)[0])
+	//	{
+	//
+	//		// enabled or disabled code
+	//	case '+':
+	//		ss.seekg(1);
+	//	case '$':
+	//		if (gcode.name.size())
+	//			gcodes.push_back(gcode);
+	//		gcode = GeckoCode();
+	//		gcode.enabled = (1 == ss.tellg()); // silly
+	//		// gcode.user_defined = (ini == &localIni);
+	//		ss.seekg(1, std::ios_base::cur);
+	//		// read the code name
+	//		std::getline(ss, gcode.name, '['); // stop at [ character (beginning of contributor name)
+	//		gcode.name = StripSpaces(gcode.name);
+	//		// read the code creator name
+	//		std::getline(ss, gcode.creator, ']');
+	//		break;
+	//
+	//		// notes
+	//	case '*':
+	//		gcode.notes.push_back(std::string(++line.begin(), line.end()));
+	//		break;
+	//
+	//		// either part of the code, or an option choice
+	//	default:
+	//	{
+	//		CodeData new_code;
+	//		// TODO: support options
+	//		new_code.original_line = line;
+	//		ss >> std::hex >> new_code.address >> new_code.data;
+	//		gcode.codes.push_back(new_code);
+	//	}
+	//	break;
+	//	}
+	//}
+	//
+	//gcode.enabled = true;
+	//gcodes.push_back(gcode);
+	//gcode.enabled = false;
+
+	//if mods are enabled
+
+	for (uint32_t i = 0; i < inis.size(); ++i)
 	{
+		IniFile *ini = &(inis[i]);
+
 		std::vector<std::string> lines;
 		ini->GetLines("Gecko", &lines, false);
 
@@ -59,7 +126,7 @@ void LoadCodes(const IniFile& globalIni, const IniFile& localIni, std::vector<Ge
 				// either part of the code, or an option choice
 			default:
 			{
-				GeckoCode::Code new_code;
+				CodeData new_code;
 				// TODO: support options
 				new_code.original_line = line;
 				ss >> std::hex >> new_code.address >> new_code.data;
@@ -122,7 +189,7 @@ static void SaveGeckoCode(std::vector<std::string>& lines, std::vector<std::stri
 	lines.push_back(name);
 
 	// save all the code lines
-	for (const GeckoCode::Code& code : gcode.codes)
+	for (const CodeData& code : gcode.codes)
 	{
 		//ss << std::hex << codes_iter->address << ' ' << codes_iter->data;
 		//lines.push_back(StringFromFormat("%08X %08X", codes_iter->address, codes_iter->data));

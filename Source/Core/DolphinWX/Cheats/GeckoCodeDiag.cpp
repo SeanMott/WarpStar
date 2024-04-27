@@ -142,7 +142,7 @@ void CodeConfigPanel::UpdateInfoBox(wxCommandEvent&)
 			StrToWxStr(m_gcodes[sel].creator));
 
 		// add codes to info listbox
-		for (const GeckoCode::Code& code : m_gcodes[sel].codes)
+		for (const CodeData& code : m_gcodes[sel].codes)
 		{
 			m_infobox.listbox_codes->Append(wxString::Format("%08X %08X", code.address, code.data));
 		}
@@ -244,7 +244,7 @@ void CodeConfigPanel::DownloadCodes(wxCommandEvent&)
 				// valid hex chars :/
 				if (8 == addr.length() && 8 == data.length())
 				{
-					GeckoCode::Code new_code;
+					CodeData new_code;
 					new_code.original_line = line;
 					ssline >> std::hex >> new_code.address >> new_code.data;
 					gcode.codes.push_back(new_code);

@@ -41,6 +41,7 @@
 #include "Core/NetPlayClient.h"
 #include "Core/NetPlayProto.h"
 #include "Core/NetPlayServer.h"
+#include "Core/GeckoCode.h"
 
 #include "DolphinWX/Frame.h"
 #include "DolphinWX/GameListCtrl.h"
@@ -273,12 +274,12 @@ wxSizer* NetPlayDialog::CreateBottomGUI(wxWindow* parent)
                 wxArrayString choices;
                 choices.Add("Latency");
                 choices.Add("CPU");
-
+	   
                 m_lag_reduction_choice = new wxChoice(parent, wxID_ANY, wxDefaultPosition, wxDefaultSize, choices);
                 m_lag_reduction_choice->SetSelection(0);
                 m_lag_reduction_choice->Bind(wxEVT_CHOICE, &NetPlayDialog::OnAdjustLagReduction, this);
             }
-
+	   
             m_widescreen_force_chkbox = new wxCheckBox(parent, wxID_ANY, "Force Widescreen for streaming");
         }
 
@@ -290,23 +291,23 @@ wxSizer* NetPlayDialog::CreateBottomGUI(wxWindow* parent)
 		bottom_szr->Add(buffer_lbl, 0, wxALIGN_CENTER_VERTICAL | wxLEFT, space5);
 		bottom_szr->Add(m_player_padbuf_spin, 0, wxALIGN_CENTER_VERTICAL | wxLEFT, space5);
 
-        if(IsKARHackPack() || IsPALMelee())
-        {
-            if(!Is20XX())
-            {
-                bottom_szr->Add(new wxStaticText(parent, wxID_ANY, "Optimize for:"), 0, wxALIGN_CENTER_VERTICAL | wxLEFT, space5);
-                bottom_szr->Add(m_lag_reduction_choice, 0, wxALIGN_CENTER_VERTICAL | wxLEFT, space5);
-            }
-
-            wxBoxSizer* const chkbox_sizer = new wxBoxSizer(wxVERTICAL);
-            chkbox_sizer->Add(m_memcard_write, 0, wxLEFT, space5);
-            chkbox_sizer->Add(m_widescreen_force_chkbox, 0, wxLEFT, space5);
-
-            bottom_szr->Add(chkbox_sizer, 0, wxALIGN_CENTER_VERTICAL | wxLEFT, space5);
-        }
-        else
+       if(IsKARHackPack() || IsPALMelee())
+       {
+           if(!Is20XX())
+           {
+               bottom_szr->Add(new wxStaticText(parent, wxID_ANY, "Optimize for:"), 0, wxALIGN_CENTER_VERTICAL | wxLEFT, space5);
+               bottom_szr->Add(m_lag_reduction_choice, 0, wxALIGN_CENTER_VERTICAL | wxLEFT, space5);
+           }
+	   
+           wxBoxSizer* const chkbox_sizer = new wxBoxSizer(wxVERTICAL);
+           chkbox_sizer->Add(m_memcard_write, 0, wxLEFT, space5);
+          chkbox_sizer->Add(m_widescreen_force_chkbox, 0, wxLEFT, space5);
+	   
+           bottom_szr->Add(chkbox_sizer, 0, wxALIGN_CENTER_VERTICAL | wxLEFT, space5);
+       }
+       else
 		    bottom_szr->Add(m_memcard_write, 0, wxALIGN_CENTER_VERTICAL | wxLEFT, space5);
-
+	   
 		bottom_szr->AddSpacer(space5);
 	}
 	else
@@ -377,7 +378,7 @@ void NetPlayDialog::OnChat(wxCommandEvent&)
 
 bool NetPlayDialog::IsKARHackPack()
 {
-	return m_selected_game.find("KHPE01") != std::string::npos;
+	return false; // m_selected_game.find("KHPE01") != std::string::npos;
 	//|| m_selected_game.find("GALJ01") != std::string::npos;
 }
 
@@ -447,6 +448,10 @@ void NetPlayDialog::OnStart(wxCommandEvent&)
 
 void NetPlayDialog::BootGame(const std::string& filename)
 {
+	//injects codes
+	//Gecko::SetActiveCodes({});
+
+	//boots game
 	main_frame->BootGame(filename);
 }
 
@@ -489,12 +494,12 @@ void NetPlayDialog::OnMsgStartGame()
 		m_game_btn->Disable();
 		m_player_config_btn->Disable();
         
-        if(IsKARHackPack() || IsPALMelee())
-        {
-        	if(!Is20XX())
-            	m_lag_reduction_choice->Disable();
-            m_widescreen_force_chkbox->Disable();
-        }
+      if(IsKARHackPack() || IsPALMelee())
+      {
+      	if(!Is20XX())
+          	m_lag_reduction_choice->Disable();
+          m_widescreen_force_chkbox->Disable();
+      }
 	}
 
 	m_record_chkbox->Disable();
@@ -511,12 +516,12 @@ void NetPlayDialog::OnMsgStopGame()
 		m_game_btn->Enable();
 		m_player_config_btn->Enable();
 
-        if(IsKARHackPack() || IsPALMelee())
-        {
-        	if(!Is20XX())
-            	m_lag_reduction_choice->Enable();
-            m_widescreen_force_chkbox->Enable();
-        }
+       if(IsKARHackPack() || IsPALMelee())
+       {
+       	if(!Is20XX())
+           	m_lag_reduction_choice->Enable();
+        m_widescreen_force_chkbox->Enable();
+       }
 	}
 	m_record_chkbox->Enable();
 }
@@ -723,8 +728,11 @@ void NetPlayDialog::OnThread(wxThreadEvent& event)
 	break;
 	case NP_GUI_EVT_PLAYER_PAD_BUFFER_CHANGE:
 	{
-		if(m_player_padbuf_spin->GetValue() != m_player_pad_buffer)
+		if (m_player_padbuf_spin->GetValue() != m_player_pad_buffer)
+		{
 			m_player_padbuf_spin->SetValue(m_player_pad_buffer);
+			//OSD::AddMessage("Pad Change: " + std::to_string(m_player_pad_buffer), OSD::Duration::VERY_LONG, OSD::Color::CYAN);
+		}
 	}
 	break;
 	case NP_GUI_EVT_DESYNC:

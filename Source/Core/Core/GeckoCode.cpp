@@ -27,7 +27,7 @@ static const u32 INSTALLER_END_ADDRESS = 0x80003000;
 // return true if a code exists
 bool GeckoCode::Exist(u32 address, u32 data) const
 {
-	for (const GeckoCode::Code& code : codes)
+	for (const CodeData& code : codes)
 	{
 		if (code.address == address && code.data == data)
 			return true;
@@ -44,7 +44,7 @@ bool GeckoCode::Compare(const GeckoCode& compare) const
 
 	unsigned int exist = 0;
 
-	for (const GeckoCode::Code& code : codes)
+	for (const CodeData& code : codes)
 	{
 		if (compare.Exist(code.address, code.data))
 			exist++;
@@ -58,53 +58,135 @@ static bool code_handler_installed = false;
 static std::vector<GeckoCode> active_codes;
 static std::mutex active_codes_lock;
 
-static bool IsEnabledMeleeCode(const GeckoCode& code)
-{
-    if(SConfig::GetInstance().bMeleeForceWidescreen && code.name == "Widescreen 16:9")
-        return true;
-        
-    if(NetPlay::IsNetPlayRunning() && SConfig::GetInstance().iLagReductionCode != MELEE_LAG_REDUCTION_CODE_UNSET)
-    {
-        if(SConfig::GetInstance().iLagReductionCode == MELEE_LAG_REDUCTION_CODE_NORMAL)
-            return code.name.find("Normal Lag Reduction") != std::string::npos;
+//static bool IsEnabledMeleeCode(const GeckoCode& code)
+//{
+//    if(SConfig::GetInstance().bMeleeForceWidescreen && code.name == "Widescreen 16:9")
+//        return true;
+//        
+//    if(NetPlay::IsNetPlayRunning() && SConfig::GetInstance().iLagReductionCode != MELEE_LAG_REDUCTION_CODE_UNSET)
+//    {
+//        if(SConfig::GetInstance().iLagReductionCode == MELEE_LAG_REDUCTION_CODE_NORMAL)
+//            return code.name.find("Normal Lag Reduction") != std::string::npos;
+//
+//        if(SConfig::GetInstance().iLagReductionCode == MELEE_LAG_REDUCTION_CODE_PERFORMANCE)
+//            return code.name.find("Performance Lag Reduction") != std::string::npos;
+//    }
+//
+//    return false;
+//}
 
-        if(SConfig::GetInstance().iLagReductionCode == MELEE_LAG_REDUCTION_CODE_PERFORMANCE)
-            return code.name.find("Performance Lag Reduction") != std::string::npos;
-    }
+//static bool IsDisabledMeleeCode(const GeckoCode& code)
+//{
+//    if(NetPlay::IsNetPlayRunning() && SConfig::GetInstance().iLagReductionCode != MELEE_LAG_REDUCTION_CODE_UNSET)
+//    {
+//        if(SConfig::GetInstance().iLagReductionCode == MELEE_LAG_REDUCTION_CODE_NORMAL)
+//            return code.name.find("Performance Lag Reduction") != std::string::npos;
+//
+//        if(SConfig::GetInstance().iLagReductionCode == MELEE_LAG_REDUCTION_CODE_PERFORMANCE)
+//            return code.name.find("Normal Lag Reduction") != std::string::npos;
+//    }
+//
+//    return false;
+//}
 
-    return false;
-}
-
-static bool IsDisabledMeleeCode(const GeckoCode& code)
-{
-    if(NetPlay::IsNetPlayRunning() && SConfig::GetInstance().iLagReductionCode != MELEE_LAG_REDUCTION_CODE_UNSET)
-    {
-        if(SConfig::GetInstance().iLagReductionCode == MELEE_LAG_REDUCTION_CODE_NORMAL)
-            return code.name.find("Performance Lag Reduction") != std::string::npos;
-
-        if(SConfig::GetInstance().iLagReductionCode == MELEE_LAG_REDUCTION_CODE_PERFORMANCE)
-            return code.name.find("Normal Lag Reduction") != std::string::npos;
-    }
-
-    return false;
-}
+////have we already set the right gekko code
+//static bool KAR_Netplay_AlreadyHaveTheCorrectGekkoCodeEnabled = false;
+//
+//#define KAR_NETPLAY_GEKKO_CODE_INJECTOR_FULL_SCREEN_NAME_ARRAY_COUNT 4
+//
+////the local full screen gekko code names
+//static const char
+//    *KAR_NETPLAY_LOCAL_FULL_SCREEN_GEKKO_CODE_NAMES[KAR_NETPLAY_GEKKO_CODE_INJECTOR_FULL_SCREEN_NAME_ARRAY_COUNT] = {
+//
+//};
+//
+////the online full screen gekko code names
+//static const char
+//    *KAR_NETPLAY_ONLINE_FULL_SCREEN_GEKKO_CODE_NAMES[KAR_NETPLAY_GEKKO_CODE_INJECTOR_FULL_SCREEN_NAME_ARRAY_COUNT] = {
+//        "P1 Fullscreen", "P2 Fullscreen", "P3 Fullscreen", "P4 Fullscreen"};
+//
+////enables the desired Full screen gekko code
+//static bool KAR_HackPack_ValidateGekkoCode_CorrectFullScreenCode(const GeckoCode &code)
+//{
+//	if (!NetPlay::IsNetPlayRunning())
+//		return false;
+//
+//	const char *gc = code.name.c_str();
+//
+//	//validates that only one of the eight is active
+//	for (uint32_t i = 0; i < KAR_NETPLAY_GEKKO_CODE_INJECTOR_FULL_SCREEN_NAME_ARRAY_COUNT; ++i)
+//	{
+//		if (!strcmp(KAR_NETPLAY_ONLINE_FULL_SCREEN_GEKKO_CODE_NAMES[i], gc))
+//		{
+//			//if we have already chosen the code to use, reject this one
+//			if (KAR_Netplay_AlreadyHaveTheCorrectGekkoCodeEnabled)
+//				return false;
+//
+//			//if we have no check it and enable it
+//			if (i == SConfig::GetInstance().KAR_Netplay_GCPort)
+//			{
+//				KAR_Netplay_AlreadyHaveTheCorrectGekkoCodeEnabled = true;
+//				return true;
+//			}
+//		}
+//	}
+//
+//	//let it through if it isn't a full screen code
+//	return true;
+//}
 
 void SetActiveCodes(const std::vector<GeckoCode>& gcodes)
 {
 	std::lock_guard<std::mutex> lk(active_codes_lock);
 
 	active_codes.clear();
+	//active_codes.reserve(100);
 
 	// add enabled codes
 	for (const GeckoCode& gecko_code : gcodes)
 	{        
-		if ((gecko_code.enabled && !IsDisabledMeleeCode(gecko_code)) || IsEnabledMeleeCode(gecko_code))
+		if (gecko_code.enabled)// && KAR_HackPack_ValidateGekkoCode_CorrectFullScreenCode(gecko_code))// && !IsDisabledMeleeCode(gecko_code)) || IsEnabledMeleeCode(gecko_code))
 		{
 			// TODO: apply modifiers
 			// TODO: don't need description or creator string, just takin up memory
 			active_codes.push_back(gecko_code);
 		}
 	}
+
+	GeckoCode code;
+
+	//auto injects the ini files containing Core content
+
+	//test with flashy menu
+	CodeData codeData;
+
+	//""
+	//""
+	//std::istringstream ss("C23FAC58 00000002");
+	//ss >> std::hex >> codeData.address >> codeData.data;
+	//code.codes.emplace_back(codeData);
+	//
+	//ss = std::istringstream("80060004 5400083E");
+	//ss >> std::hex >> codeData.address >> codeData.data;
+	//code.codes.emplace_back(codeData);
+	//
+	//ss = std::istringstream("90060004 00000000");
+	//ss >> std::hex >> codeData.address >> codeData.data;
+	//code.codes.emplace_back(codeData);
+	//
+	//code.enabled = true;
+	//active_codes.push_back(code);
+
+	//"C23FAC58 00000002" >> std::hex >> 
+	//"80060004 5400083E"
+	//"90060004 00000000"
+	
+	//GeckoCode::Code c = code.codes.emplace_back(GeckoCode::Code());
+	//std::hex >>  .address >> code.data;
+	//
+	
+
+	//if mods are enabled, load their Gekko codes as well
 
 	code_handler_installed = false;
 }
@@ -169,13 +251,17 @@ static bool InstallCodeHandler()
 
 	std::lock_guard<std::mutex> lk(active_codes_lock);
 
+	//applies the codes
+	//SetActiveCodes({});
+
 	int i = 0;
 
 	for (const GeckoCode& active_code : active_codes)
 	{
-		if ((active_code.enabled && !IsDisabledMeleeCode(active_code)) || IsEnabledMeleeCode(active_code))
+		if (active_code.enabled)// &&
+		   // KAR_HackPack_ValidateGekkoCode_CorrectFullScreenCode(active_code)) // && !IsDisabledMeleeCode(active_code)) || IsEnabledMeleeCode(active_code))
 		{
-			for (const GeckoCode::Code& code : active_code.codes)
+			for (const CodeData& code : active_code.codes)
 			{
 				// Make sure we have enough memory to hold the code list
 				if ((codelist_base_address + 24 + i) < codelist_end_address)

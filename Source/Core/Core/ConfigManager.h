@@ -45,7 +45,9 @@ enum GameType
 {
 	GAMETYPE_OTHER,
 	GAMETYPE_MELEE_NTSC,
-	GAMETYPE_MELEE_20XX
+	GAMETYPE_MELEE_20XX,
+
+	GAMETYPE_KAR_HACKPACK
 };
 
 enum PollingMethod
@@ -63,6 +65,11 @@ enum MeleeLagReductionCode
 
 struct SConfig : NonCopyable
 {
+	//KAR Hack Pack port connection
+	uint8_t KAR_Netplay_GCPort = 0;
+	//are we using local full screen or netplay full screen
+	bool KAR_Netplay_useLocalFullScreen = false;
+
 	// Wii Devices
 	bool m_WiiSDCard;
 	bool m_WiiKeyboard;
