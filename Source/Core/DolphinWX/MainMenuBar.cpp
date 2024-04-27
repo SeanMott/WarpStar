@@ -42,6 +42,7 @@ void MainMenuBar::Refresh(bool erase_background, const wxRect* rect)
 void MainMenuBar::AddMenus()
 {
 	Append(CreateFileMenu(), _("&File"));
+	Append(CreateModdingMenu(), _("&Modding"));
 	Append(CreateEmulationMenu(), _("&Emulation"));
 	Append(CreateMovieMenu(), _("&Movie"));
 	Append(CreateOptionsMenu(), _("&Options"));
@@ -86,6 +87,19 @@ wxMenu* MainMenuBar::CreateFileMenu() const
 	file_menu->Append(wxID_EXIT, _("E&xit") + "\tAlt+F4");
 
 	return file_menu;
+}
+
+//creates the menu for modding and KAR Workshop
+wxMenu* MainMenuBar::CreateModdingMenu() const
+{
+	auto *const mod_menu = new wxMenu;
+	mod_menu->Append(wxID_OPEN, _("&Find KAR Workshop Database...."));
+	mod_menu->Append(wxID_OPEN, _("&Sync With KAR Workshop"));
+	
+	mod_menu->AppendSeparator();
+	mod_menu->Append(wxID_REFRESH, _("&Open Mod Menu"));
+
+	return mod_menu;
 }
 
 wxMenu* MainMenuBar::CreateEmulationMenu() const

@@ -30,6 +30,8 @@ private:
   void BindEvents();
 
   wxMenu* CreateFileMenu() const;
+  //creates the KAR Workshop Menu item
+  wxMenu *CreateModdingMenu() const;
   wxMenu* CreateEmulationMenu() const;
   wxMenu* CreateMovieMenu() const;
   wxMenu* CreateOptionsMenu() const;
