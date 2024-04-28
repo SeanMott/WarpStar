@@ -1120,17 +1120,17 @@ DiscIO::Language SConfig::GetCurrentLanguage(bool wii) const
 
 IniFile SConfig::LoadDefaultGameIni() const
 {
-	return LoadDefaultGameIni(m_gameType == GAMETYPE_MELEE_20XX ? "GALEXX" : GetGameID(), m_revision);
+	return LoadDefaultGameIni(GetGameID(), m_revision);
 }
 
 IniFile SConfig::LoadLocalGameIni() const
 {
-	return LoadLocalGameIni(m_gameType == GAMETYPE_MELEE_20XX ? "GALEXX" : GetGameID(), m_revision);
+	return LoadLocalGameIni(GetGameID(), m_revision);
 }
 
 IniFile SConfig::LoadGameIni() const
 {
-	return LoadGameIni(m_gameType == GAMETYPE_MELEE_20XX ? "GALEXX" : GetGameID(), m_revision);
+	return LoadGameIni(GetGameID(), m_revision);
 }
 
 IniFile SConfig::LoadDefaultGameIni(const std::string& id, u16 revision)

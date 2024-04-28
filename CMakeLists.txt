@@ -658,6 +658,9 @@ include_directories(Externals/Bochs_disasm)
 
 add_subdirectory(Externals/glslang)
 
+add_subdirectory(Externals/WarpStarLib)
+include_directories(Externals/WarpStarLib/includes)
+
 add_subdirectory(Externals/SlippiLib)
 include_directories(Externals/SlippiLib)
 
