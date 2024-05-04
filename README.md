@@ -2,6 +2,8 @@
 
 [Netplay Website](https://www.kirbyairrideonline.com/) | [Netplay Discord](http://discord.gg/p3rGrcr) | [Wiki](https://kar.miraheze.org/wiki/Main_Page) | [KAR Workshop]()
 
+NO LONGER MAINTAINED, THIS REPO HAS BEEN ABANDONED AND ALL WORK HAS MOVED TO [REAL KARPHIN](https://github.com/SeanMott/KARphin)
+
 Warp Star is a fork* of [Slippie](https://github.com/project-slippi/Ishiiruka/tree/slippi) Ishiiruka R10 for the purpose of supporting KAR Netplay. It is differant from [KARphin](https://github.com/SeanMott/KARphin) which is a fork of Dolphin 5.0 for the purpose of supporting KAR Netplay.
 
 Warp Star is an emulator for running ~~GameCube and Wii games~~ Kirby Air Ride (KAR) on Windows,
